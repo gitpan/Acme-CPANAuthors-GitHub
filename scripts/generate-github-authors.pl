@@ -8,7 +8,7 @@ use File::Spec::Functions qw(catfile splitpath updir);
 use LWP::UserAgent;
 use JSON;
 
-my $VERSION = '0.01';
+my $VERSION = '0.02';
 
 my $file = catfile(
     (splitpath(realpath __FILE__))[0, 1], updir,
@@ -18,7 +18,10 @@ my $file = catfile(
 my $packages = Acme::CPANAuthors::Utils::cpan_packages();
 my $authors  = Acme::CPANAuthors::Utils::cpan_authors();
 
-my $ua  = LWP::UserAgent->new(env_proxy => 1);
+my $ua = LWP::UserAgent->new(
+    agent     => 'Acme::CPANAuthors::GitHub',
+    env_proxy => 1,
+);
 
 sub _uri {
     return sprintf "http://search.cpan.org/meta/%s/META.json", $_[0];
@@ -50,7 +53,6 @@ for my $dist ($packages->latest_distributions) {
     next unless $repo;
 
     my $url = 'HASH' eq ref $repo ? $repo->{url} : $repo;
-    next unless $url;
     next unless $url and $url =~ m[^(?:git|https?)://github\.com/]i;
 
     $authors{$cpanid} = $authors->author($cpanid)->name;
@@ -144,13 +146,13 @@ L<http://rt.cpan.org/Public/Dist/Display.html?Name=Acme-CPANAuthors-GitHub>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Acme-CPANAuthors-GitHub>
+L<http://search.cpan.org/dist/Acme-CPANAuthors-GitHub/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010 gray <gray at cpan.org>, all rights reserved.
+Copyright (C) 2010-2011 gray <gray at cpan.org>, all rights reserved.
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
