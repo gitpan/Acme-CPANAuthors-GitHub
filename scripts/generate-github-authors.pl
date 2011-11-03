@@ -6,9 +6,8 @@ use Acme::CPANAuthors::Utils;
 use Cwd qw(realpath);
 use ElasticSearch;
 use File::Spec::Functions qw(catfile splitpath updir);
-use JSON;
 
-my $VERSION = '0.03';
+my $VERSION = '0.04';
 
 my $es = ElasticSearch->new(
     servers    => 'api.metacpan.org',
@@ -202,4 +201,3 @@ under the same terms as Perl itself.
 gray, <gray at cpan.org>
 
 =cut
-__EOF__
