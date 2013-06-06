@@ -7,11 +7,12 @@ use Cwd qw(realpath);
 use ElasticSearch;
 use File::Spec::Functions qw(catfile splitpath updir);
 
-my $VERSION = '0.06';
+my $VERSION = '0.07';
 
 my $es = ElasticSearch->new(
     servers    => 'api.metacpan.org',
     no_refresh => 1,
+    deflate    => 1,
 );
 
 my (%authors, %names);
@@ -27,11 +28,10 @@ exit;
 
 sub process_authors {
     my $req = $es->scrolled_search(
+        index       => 'author',
         q           => '*',
         search_type => 'scan',
         scroll      => '5m',
-        index       => 'v0',
-        type        => 'author',
         size        => 1_000,
     );
 
@@ -58,12 +58,11 @@ sub process_authors {
 
 sub process_releases {
     my $req = $es->scrolled_search(
+        index       => 'release',
         q           => 'status:latest',
         fields      => [qw(author homepage url web)],
         search_type => 'scan',
         scroll      => '5m',
-        index       => 'v0',
-        type        => 'release',
         size        => 1_000,
     );
 
@@ -191,7 +190,7 @@ L<http://search.cpan.org/dist/Acme-CPANAuthors-GitHub/>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010-2012 gray <gray at cpan.org>, all rights reserved.
+Copyright (C) 2010-2013 gray <gray at cpan.org>, all rights reserved.
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
